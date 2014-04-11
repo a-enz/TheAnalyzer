@@ -1,0 +1,6 @@
+Andreas Enz | aenz@student.ethz.ch
+Nino Weingart | ninow@student.ethz.ch
+
+I hope it's ok if we just submit this folder instead of the whole Analyzer. We had some difficulties with git and bitbucket.
+This folder is found at the following path:
+...\TheAnalyzer\edu\mit\csail\sdg
