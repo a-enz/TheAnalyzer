@@ -37,13 +37,37 @@ public class FuncVisitor extends VisitQuery<Object> {
     	case JOIN:
     		return (x.left.accept(this) + "." + x.right.accept(this));
     	case INTERSECT:
-    		return ("((" + x.left.accept(this) + ").Intersect(" + x.right.accept(this) + "))");
+//    		String returnString;
+//    		if(/*A,A,A is simple object*/){
+//    			returnString = "(ISet</*type of A*/>)" + "(" + x.left.accept(this) + ").Intersect(" + x.right.accept(this) + "))"; //TODO
+//    		}else if(/*A,B are simple sets but different type*/){ //for example A:T1, B:T2
+//    			returnString = "(ISet<Object>)" + "((ISet<Object>)" + x.left.accept(this) + ").Intersect((ISet<Object>)" + x.right.accept(this) + "))";
+//    			//TODO invariant that elements in result are from type T1 or T2
+//    		}else if(/*A,B are simple sets with same type*/){ //for example A:T, B:T
+//    			returnString = "(ISet</*type A*/>)" + "(" + x.left.accept(this) + ").Intersect(" + x.right.accept(this) + "))";
+//    			//TODO invariant that elements in result are from type T1 or T2
+//    		}else if(/*A is set,B is simple object*/){//for example A:T->T, B:T
+//    			returnString = "(ISet<Object>)" + "((ISet<Object>)" + x.left.accept(this) + ").Intersect((ISet<Object>)" + x.right.accept(this) + "))";
+//    			//TODO invariant that elements in result are form type T->T or T
+//    		}else if(/*B is set, A is simple object*/){//for example A:T3,B:T1->T2
+//    			//TODO invariant that element in result are from type T1->T2 or T3
+//    		}else if(/*A,B are relations of same type*/){//for example A:T->T, B:T->T
+//    			returnString = "(ISet<Tuple</*type of A*/,/*type of A*/>)" + "(" + x.left.accept(this) + ").Intersect(" + x.right.accept(this) + "))"; //TODO
+//    			//TODO invariant that result is from type T->T
+//    		}else if(/*A,B are relations with different types*/){
+//    			returnString = "(ISet<Object>)" + "((ISet<Object>)" + x.left.accept(this) + ").Intersect((ISet<Object>)" + x.right.accept(this) + "))";	
+//    		}
+//    		return returnString;
+    		String castTypeIntersect = x.left.type().toString();
+    		return ("(ISet<" + castTypeIntersect.substring(6, castTypeIntersect.length()-1) + ">)" + "((" + x.left.accept(this) + ").Union(" + x.right.accept(this) + "))");
     	case PLUS:
-    		return ("((" + x.left.accept(this) + ").Union(" + x.right.accept(this) + "))");
+    		String castTypePlus = x.left.type().toString();
+    		return ("(ISet<" + castTypePlus.substring(6, castTypePlus.length()-1) + ">)" + "((" + x.left.accept(this) + ").Union(" + x.right.accept(this) + "))");
     	case IPLUS:
     		return ("(" + x.left.accept(this) + " + " + x.right.accept(this) + ")");
     	case MINUS:
-    		return ("((" + x.left.accept(this) + ").Except(" + x.right.accept(this) + "))");
+    		String castTypeMinus = x.left.type().toString();
+    		return ("(ISet<" + castTypeMinus.substring(6, castTypeMinus.length()-1) + ">)" + "((" + x.left.accept(this) + ").Except(" + x.right.accept(this) + "))");
     	case IMINUS:
     		return ("(" + x.left.accept(this) + " - " + x.right.accept(this) + ")");
     	case MUL:
