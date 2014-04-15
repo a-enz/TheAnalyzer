@@ -46,7 +46,7 @@ public final class TestGenerator {
 			  
 			  //get all the created instances of that particular Sig
 			  for(A4Tuple instance: solution.eval(s)){
-				  if(instance != null && instance.sig(0) != null && ((instance.sig(0).isOne == null) || (s.isOne != null))){
+				  if(instance != null && instance.sig(0) != null && (instance.toString().startsWith(s.toString().substring(5)))/* && ((instance.sig(0).isOne == null) || (s.isOne != null))*/){
 					  String atname = instance.toString().replace("$", "");
 					  
 					  out.println("    " + clname + " " + atname +  ";");

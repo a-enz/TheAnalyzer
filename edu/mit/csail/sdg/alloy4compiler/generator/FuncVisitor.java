@@ -13,6 +13,7 @@ public class FuncVisitor extends VisitQuery<Object> {
 	
 	//constructor for our Codegenerator Visitor. Takes a Printwriter as argument
 	public FuncVisitor(){};
+	
 
 	//dummy for ExrpBinary visit. does not distinguish the operator so far 
     @Override public String visit(ExprBinary x) throws Err {
@@ -58,8 +59,13 @@ public class FuncVisitor extends VisitQuery<Object> {
 //    			returnString = "(ISet<Object>)" + "((ISet<Object>)" + x.left.accept(this) + ").Intersect((ISet<Object>)" + x.right.accept(this) + "))";	
 //    		}
 //    		return returnString;
-    		String castTypeIntersect = x.left.type().toString();
-    		return ("(ISet<" + castTypeIntersect.substring(6, castTypeIntersect.length()-1) + ">)" + "((" + x.left.accept(this) + ").Union(" + x.right.accept(this) + "))");
+//    		String castTypeIntersect = x.left.type().toString();
+//    		String type = castTypeIntersect.substring(6, castTypeIntersect.length()-1);
+//    		return ("ISet<" + type + "> res = new HashSet<" + type + ">();\n"
+//    				+ "IEnumerable<" + type + "> calc = ((" + x.left.accept(this) + ").Intersect(" + x.right.accept(this) + "))");
+    	
+       		String castTypeIntersect = x.left.type().toString();
+    		return ("(ISet<" + castTypeIntersect.substring(6, castTypeIntersect.length()-1) + ">)" + "((" + x.left.accept(this) + ").Intersect(" + x.right.accept(this) + "))");
     	case PLUS:
     		String castTypePlus = x.left.type().toString();
     		return ("(ISet<" + castTypePlus.substring(6, castTypePlus.length()-1) + ">)" + "((" + x.left.accept(this) + ").Union(" + x.right.accept(this) + "))");
@@ -161,9 +167,13 @@ public class FuncVisitor extends VisitQuery<Object> {
 			String tempParams = "";
 			for(int i = 0; i<numOfParams ;i++){
 				//if.. else if.. addd by andi
-				if(!isPred && declMult == "one of" || declMult == "lone of") tempParams += " " + decl.names.get(i).type().toExpr().accept(this) + " " + decl.names.get(i).label + ",";
-				else if(!isPred && declMult == "some of" || declMult == "set of") tempParams += " ISet<" + decl.names.get(i).type().toExpr().accept(this) + "> " + decl.names.get(i).label + ",";
-				else tempParams += " " + decl.names.get(i).type().toExpr().accept(this) + " " + decl.names.get(i).label + ",";
+//				if(!isPred && declMult == "one of" || declMult == "lone of") tempParams += " " + decl.names.get(i).type().toExpr().accept(this) + " " + decl.names.get(i).label + ",";
+//				else if(!isPred && declMult == "some of" || declMult == "set of") tempParams += " ISet<" + decl.names.get(i).type().toExpr().accept(this) + "> " + decl.names.get(i).label + ",";
+//				else tempParams += " " + decl.names.get(i).type().toExpr().accept(this) + " " + decl.names.get(i).label + ",";
+				
+				tempParams += " " + decl.expr.accept(this) + " " + decl.names.get(i).label + ",";
+				
+				
 				if(nonNullCheck){
 					preconditions += "\n\t\tContract.Requires(" + decl.names.get(i).label + " != null);";
 				}
@@ -213,8 +223,7 @@ public class FuncVisitor extends VisitQuery<Object> {
             case LONEOF: return (String) x.sub.accept(this);
             case ONEOF: return (String) x.sub.accept(this);
     		case SOMEOF:
-            case SETOF: return "ISet<" + x.sub.accept(this) + ">"; //changed by andi, Nino: merci
-            //TODO this operators must be handled
+            case SETOF: return "ISet<" + x.sub.accept(this) + ">";
             case NOT: return "!";
             case TRANSPOSE: break;
             case CARDINALITY: break;
