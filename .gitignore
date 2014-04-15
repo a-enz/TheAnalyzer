@@ -1,5 +1,4 @@
 # Generated files #
-*.class
 *.als.cs
 *.als.tests.cs
 *.dll
