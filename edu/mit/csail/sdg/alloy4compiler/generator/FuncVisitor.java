@@ -105,9 +105,9 @@ public class FuncVisitor extends VisitQuery<Object> {
     	case NOT_GTE:
     		return ("(!(" + x.left.accept(this) + " >= " + x.right.accept(this) + "))");
     	case IN:
-    		return ("((" + x.right.accept(this) + ").Contains(" + x.right.accept(this) + "))");
+    		return ("((" + x.right.accept(this) + ").Contains(" + x.left.accept(this) + "))"); //andi: switched places of x.right & x.left
     	case NOT_IN:
-    		return ("(!(" + x.right.accept(this) + ").Contains(" + x.right.accept(this) + "))");
+    		return ("(!(" + x.right.accept(this) + ").Contains(" + x.left.accept(this) + "))"); //andi: switched places of x.right & x.left
     	case AND:
     		return ("(" + x.left.accept(this) + " && " + x.right.accept(this) + ")");
     	case OR:
@@ -171,7 +171,7 @@ public class FuncVisitor extends VisitQuery<Object> {
 //				else if(!isPred && declMult == "some of" || declMult == "set of") tempParams += " ISet<" + decl.names.get(i).type().toExpr().accept(this) + "> " + decl.names.get(i).label + ",";
 //				else tempParams += " " + decl.names.get(i).type().toExpr().accept(this) + " " + decl.names.get(i).label + ",";
 				
-				tempParams += " " + decl.expr.accept(this) + " " + decl.names.get(i).label + ",";
+				tempParams += " " + decl.expr.accept(this) + " " + decl.names.get(i).label + ","; //andi: simplified this so that we visit an expression to get the types and multiplicities
 				
 				
 				if(nonNullCheck){
@@ -233,4 +233,35 @@ public class FuncVisitor extends VisitQuery<Object> {
     	}
     	return x.op.toString();
     }
+    
+    
+    // andi: added ExprList visitor (we need this in test23)
+    /** Visits an ExprList node F[X1,X2,X3..] by calling accept() on X1, X2, X3... */
+    @Override public String visit(ExprList x) throws Err {
+    	/*we simply return all visited expressions in the list
+    	 * concatinated with the proper operator
+    	 */
+    	String res = "";
+    	int i = 0;
+    	switch(x.op){
+    	case AND:
+	        for(Expr y : x.args){
+	        	if(i>0) res += " && ";
+	        	res += "(" + y.accept(this) + ")";
+	        	i++;
+	        }
+	        break;
+    	case OR:
+    		for(Expr y : x.args){
+	        	if(i>0) res += " || ";
+	        	res += "(" + y.accept(this) + ")";
+	        	i++;
+	        }
+    		break;
+		default: res += "ExprList fail";
+    	}
+    	return res;
+    }
 }
+
+

@@ -121,12 +121,14 @@ public class SigVisitor extends VisitQuery<Object> {
 	        for(Expr y : x.args){
 	        	if(i>0) res += " && ";
 	        	res += "(" + y.accept(this) + ")";
+	        	i++;
 	        }
 	        break;
     	case OR:
     		for(Expr y : x.args){
 	        	if(i>0) res += " || ";
 	        	res += "(" + y.accept(this) + ")";
+	        	i++;
 	        }
     		break;
 		default: res += "ExprList fail";
