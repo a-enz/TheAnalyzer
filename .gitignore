@@ -1,5 +1,5 @@
 # Generated files #
-*.class
+edu/mit/csail/sdg/alloy4compiler/generator/*.class
 *.als.cs
 *.als.tests.cs
 *.dll
