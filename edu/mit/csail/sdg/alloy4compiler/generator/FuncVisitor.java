@@ -83,11 +83,11 @@ public class FuncVisitor extends VisitQuery<Object> {
     	case REM:
     		return ("(" + x.left.accept(this) + " % " + x.right.accept(this) + ")");
     	case EQUALS:
-    		return ("((" + x.left.accept(this) + ").Equals((" + x.right.accept(this) + ")))");
+    		return ("(" + x.left.accept(this) + ").Equals(" + x.right.accept(this) + ")");
     	case NOT_EQUALS:
-       		return ("(!(" + x.left.accept(this) + ").Equals((" + x.right.accept(this) + ")))");	
+       		return ("!(" + x.left.accept(this) + ").Equals(" + x.right.accept(this) + ")");	
     	case IMPLIES:
-       		return ("(!(" + x.left.accept(this) + ") || (" + x.right.accept(this) + "))");	
+       		return ("!(" + x.left.accept(this) + ") || (" + x.right.accept(this) + ")");	
     	case LT:
     		return ("(" + x.left.accept(this) + " < " + x.right.accept(this) + ")");
     	case LTE:
@@ -97,23 +97,23 @@ public class FuncVisitor extends VisitQuery<Object> {
     	case GTE:
     		return ("(" + x.left.accept(this) + " >= " + x.right.accept(this) + ")");
     	case NOT_LT:
-    		return ("(!(" + x.left.accept(this) + " < " + x.right.accept(this) + "))");
+    		return ("!((" + x.left.accept(this) + " < " + x.right.accept(this) + "))");
     	case NOT_LTE:
-    		return ("(!(" + x.left.accept(this) + " <= " + x.right.accept(this) + "))");
+    		return ("!((" + x.left.accept(this) + " <= " + x.right.accept(this) + "))");
     	case NOT_GT:
-    		return ("(!(" + x.left.accept(this) + " > " + x.right.accept(this) + "))");
+    		return ("!((" + x.left.accept(this) + " > " + x.right.accept(this) + "))");
     	case NOT_GTE:
-    		return ("(!(" + x.left.accept(this) + " >= " + x.right.accept(this) + "))");
+    		return ("!((" + x.left.accept(this) + " >= " + x.right.accept(this) + "))");
     	case IN:
-    		return ("((" + x.right.accept(this) + ").Contains(" + x.left.accept(this) + "))"); //andi: switched places of x.right & x.left
+    		return ("(" + x.right.accept(this) + ").Contains(" + x.left.accept(this) + ")"); //andi: switched places of x.right & x.left
     	case NOT_IN:
-    		return ("(!(" + x.right.accept(this) + ").Contains(" + x.left.accept(this) + "))"); //andi: switched places of x.right & x.left
+    		return ("!(" + x.right.accept(this) + ").Contains(" + x.left.accept(this) + ")"); //andi: switched places of x.right & x.left
     	case AND:
-    		return ("(" + x.left.accept(this) + " && " + x.right.accept(this) + ")");
+    		return ("(" + x.left.accept(this) + ") && (" + x.right.accept(this) + ")");
     	case OR:
-    		return ("(" + x.left.accept(this) + " || " + x.right.accept(this) + ")");
+    		return ("(" + x.left.accept(this) + ") || (" + x.right.accept(this) + ")");
     	case IFF:
-    		return ("(" + x.left.accept(this) + " == " + x.right.accept(this) + ")");
+    		return ("(" + x.left.accept(this) + ") == (" + x.right.accept(this) + ")");
     	default:
     		return "noScpecifiedBinaryOperation";
     	}
@@ -136,6 +136,8 @@ public class FuncVisitor extends VisitQuery<Object> {
     public String visit(Func f) throws Err {
 		String params = ""; //string of all parameters
 		String preconditions = ""; //string that has all "!=" statments for the parameters
+		String postconditions = ""; //andi: postconditions
+		boolean postNonNullCheck; //andi: postconditions
 		PostconditionVisitor postVisitor = new PostconditionVisitor();
 
 		boolean isPred = f.isPred;
@@ -148,21 +150,33 @@ public class FuncVisitor extends VisitQuery<Object> {
 			returnType = (String) f.returnDecl.accept(this);	
 		}
 		
+		//andi: postconditions
+		String postDeclMult = (String) f.returnDecl.accept(postVisitor); //andi: postconditions
+		if(postDeclMult == "one of" || postDeclMult == "some of" || postDeclMult == "set of"){
+			postNonNullCheck = true;
+		}else{
+			postNonNullCheck = false;
+		}
+		
+		if(postNonNullCheck) postconditions = "\n\t\tContract.Ensures(Contract.Result<" + returnType + ">() != null);";
+		
 		//Parameter Construction
 		List<Decl> declList = f.decls;
 		
 		for(Decl decl:declList){
 			int numOfParams = decl.names.size();
-			boolean nonNullCheck;
+			boolean preNonNullCheck;
 			
-			String declMult = (String) decl.expr.accept(postVisitor);
+			String preDeclMult = (String) decl.expr.accept(postVisitor);
 			
 			//checks whether non null check is needed or not
-			if(declMult == "one of" || declMult == "some of" || declMult == "set of"){
-				nonNullCheck = true;
+			if(preDeclMult == "one of" || preDeclMult == "some of" || preDeclMult == "set of"){
+				preNonNullCheck = true;
 			}else{
-				nonNullCheck = false;
+				preNonNullCheck = false;
 			}
+			
+	
 			
 			String tempParams = "";
 			for(int i = 0; i<numOfParams ;i++){
@@ -174,7 +188,7 @@ public class FuncVisitor extends VisitQuery<Object> {
 				tempParams += " " + decl.expr.accept(this) + " " + decl.names.get(i).label + ","; //andi: simplified this so that we visit an expression to get the types and multiplicities
 				
 				
-				if(nonNullCheck){
+				if(preNonNullCheck){
 					preconditions += "\n\t\tContract.Requires(" + decl.names.get(i).label + " != null);";
 				}
 			}
@@ -198,6 +212,7 @@ public class FuncVisitor extends VisitQuery<Object> {
 				+ "("
 				+ params + "){"
 				+ preconditions
+				+ postconditions
 				+ "\n\t\treturn "
 				+ body
 				+ ";"

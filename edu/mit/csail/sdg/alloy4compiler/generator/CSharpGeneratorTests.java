@@ -168,7 +168,6 @@ public final class CSharpGeneratorTests {
 			    t = new TaskWithTimeout(f + testCompExt, timeout);
 		    	r = t.run();
 			    System.out.print("Code and test execution: ");
-			    System.out.println(t.errorOutput);
 			    if (expected[index]) {
 			    	if (r == ProcessResult.SUCCESS) {
 			    		if (okay) {
@@ -204,6 +203,7 @@ public final class CSharpGeneratorTests {
 			            }
 			    	}
 			    }
+			    System.out.println(t.errorOutput);
 			}
 			catch (Throwable ex) {
 				System.out.println("Error running the tests.");

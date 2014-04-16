@@ -49,27 +49,47 @@ public class TVisitor extends VisitQuery<Object> {
        	case REM:
     		return "(" + x.left.accept(this) + ") % (" + x.right.accept(this) + ")";
     	case EQUALS:
-    		return "(" + x.left.accept(this) + ") == (" + x.right.accept(this) + ")";
+    		return "(" + x.left.accept(this) + ").Equals(" + x.right.accept(this) + ")";
     	case NOT_EQUALS:
-    		return "(" + x.left.accept(this) + ") != (" + x.right.accept(this) + ")"; 
+    		return "!(" + x.left.accept(this) + ").Equals(" + x.right.accept(this) + ")"; 
     	case IMPLIES:
     		return "!(" + x.left.accept(this) + ") || (" + x.right.accept(this) + ")";
     	case LT:
     		return "(" + x.left.accept(this) + ") < (" + x.right.accept(this) + ")";
+    	case NOT_LT:
+    		return "!((" + x.left.accept(this) + ") < (" + x.right.accept(this) + "))";
     	case LTE:
     		return "(" + x.left.accept(this) + ") <= (" + x.right.accept(this) + ")";
+    	case NOT_LTE:
+    		return "!((" + x.left.accept(this) + ") <= (" + x.right.accept(this) + "))";
     	case GT:
     		return "(" + x.left.accept(this) + ") > (" + x.right.accept(this) + ")";
+    	case NOT_GT:
+    		return "!((" + x.left.accept(this) + ") > (" + x.right.accept(this) + "))";
     	case GTE:
     		return "(" + x.left.accept(this) + ") >= (" + x.right.accept(this) + ")";
+    	case NOT_GTE:
+    		return "!((" + x.left.accept(this) + ") >= (" + x.right.accept(this) + "))";
+    	case IN:
+    		return ("(" + x.right.accept(this) + ").Contains(" + x.left.accept(this) + ")");
+    	case NOT_IN:
+    		return ("!(" + x.right.accept(this) + ").Contains(" + x.left.accept(this) + ")");    	
+    	case AND:
+    		return ("(" + x.left.accept(this) + ") && (" + x.right.accept(this) + ")");
+    	case OR:
+    		return ("(" + x.left.accept(this) + ") || (" + x.right.accept(this) + ")");
+    	case IFF:
+    		return ("(" + x.left.accept(this) + ") == (" + x.right.accept(this) + ")");
+    	case INTERSECT:
+			return ("Helper.ToSet((" + x.left.accept(this) + ").Intersect(" + x.right.accept(this) + "))");
+    	case PLUS: 
+    		return ("Helper.ToSet((" + x.left.accept(this) + ").Union(" + x.right.accept(this) + "))");
+    	case MINUS:
+    		return ("Helper.ToSet((" + x.left.accept(this) + ").Except(" + x.right.accept(this) + "))");
 		default: return "ExprBinary fail:" + x.op.toString();
     	}
     	
 //    	still need to implement:
-//        /** &amp;           */  INTERSECT("&",false),
-//        /** set union       */  PLUS("+",false),
-//        /** set diff        */  MINUS("-",false),
-//        /** multiply        */  MUL("*",false),
 //        /** !&lt;           */  NOT_LT("!<",false),
 //        /** !=&lt;          */  NOT_LTE("!<=",false),
 //        /** !&gt;           */  NOT_GT("!>",false),
