@@ -29,8 +29,8 @@ public class SigVisitor extends VisitQuery<Object> {
     	case  ONE_ARROW_ANY:
     	case  ONE_ARROW_SOME:
     	case  LONE_ARROW_ANY:
-    	case  LONE_ARROW_LONE:
     	case  LONE_ARROW_SOME:
+    	case  LONE_ARROW_LONE:
     	case  LONE_ARROW_ONE:
     	case  ONE_ARROW_ONE:
     	case  ONE_ARROW_LONE:

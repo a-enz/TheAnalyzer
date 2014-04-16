@@ -203,7 +203,6 @@ public final class CSharpGeneratorTests {
 			            }
 			    	}
 			    }
-			    System.out.println(t.errorOutput);
 			}
 			catch (Throwable ex) {
 				System.out.println("Error running the tests.");

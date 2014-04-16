@@ -88,7 +88,7 @@ public final class CodeGenerator {
 						  out.print("    Contract.Invariant(" + f.label + " != null);\n");
 					  }
 					  
-					  //TODO add more advanced contracts
+					  if((f.decl().expr instanceof ExprBinary)) out.print(f.decl().expr.accept(new ContractVisitor(f.label, "    Contract.Invariant")));
 				  }
 				  
 				  out.print("  }\n"); //close invariant
