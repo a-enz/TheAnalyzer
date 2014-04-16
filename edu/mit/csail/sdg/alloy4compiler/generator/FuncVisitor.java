@@ -158,8 +158,9 @@ public class FuncVisitor extends VisitQuery<Object> {
 			postNonNullCheck = false;
 		}
 		
-		if(postNonNullCheck) postconditions = "\n\t\tContract.Ensures(Contract.Result<" + returnType + ">() != null);";
+		if(postNonNullCheck && !isPred) postconditions += "\n\t\tContract.Ensures(Contract.Result<" + returnType + ">() != null);";
 		
+		if(!isPred && !(f.returnDecl instanceof ExprUnary)) postconditions += "\n\t\tContract.Ensures(" + f.returnDecl.accept(new ContractVisitor("Contract.Result<" + returnType + ">()")) + ");";
 		//Parameter Construction
 		List<Decl> declList = f.decls;
 		
