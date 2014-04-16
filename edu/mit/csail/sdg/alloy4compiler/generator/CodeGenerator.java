@@ -112,8 +112,8 @@ public final class CodeGenerator {
 	  
 	  //TODO: finish Helper function
 	  //for now just a dummy function:
-	  out.print("public static class Helper {\n"
-			  	+"\npublic static ISet<Tuple<L, R>> Closure<L, R>(ISet<Tuple<L, R>> set) {"
+	  out.print("public static class Helper {\n");
+	  out.print("\npublic static ISet<Tuple<L, R>> Closure<L, R>(ISet<Tuple<L, R>> set) {"
 				  	+ "\n\tTuple<L,R> typeTest = set.ElementAt(0);"
 				  	+ "\n\tif(typeTest.Item2 is L)"
 				  	+ "\n\t{"
@@ -142,11 +142,19 @@ public final class CodeGenerator {
 		            + "\n\t\t}"
 		            + "\n\t}"
 		            + "\n\treturn set;"
-		            + "\n}"
-	            + "\n\npublic static ISet<Tuple<L, R>> RClosure<L, R>(ISet<Tuple<L, R>> set) {"
+		            + "\n}");
+	        out.print("\n\npublic static ISet<Tuple<L, R>> RClosure<L, R>(ISet<Tuple<L, R>> set) {"
 	            	+ "\n\treturn set;"
-	            + "\n}"
-	  		+ "\n}\n");
+	            + "\n}\n");
+	        
+	        out.print("public static ISet<T> ToSet<T>(IEnumerable<T> ienum) {\n"
+	        		+ "  ISet<T> res = new HashSet<T>();\n"
+	        		+ "  foreach(T item in ienum){\n"
+	        		+ "    res.Add(item);\n"
+	        		+ "  }\n"
+	        		+ "  return res;\n"
+	        		+ "}\n");
+	  		out.print("\n}\n");
 	  //close Printwriter
 	  out.close();
   }

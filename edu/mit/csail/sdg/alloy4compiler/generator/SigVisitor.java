@@ -57,15 +57,21 @@ public class SigVisitor extends VisitQuery<Object> {
     	case NOT_EQUALS:
     		return "(" + x.left.accept(this) + ") != (" + x.right.accept(this) + ")"; 
     	case IMPLIES:
-    		return "(" + x.left.accept(this) + ") -: (" + x.right.accept(this) + ")";
+    		return "!(" + x.left.accept(this) + ") || (" + x.right.accept(this) + ")";
     	case LT:
     		return "(" + x.left.accept(this) + ") < (" + x.right.accept(this) + ")";
     	case LTE:
     		return "(" + x.left.accept(this) + ") <= (" + x.right.accept(this) + ")";
     	case GT:
-    		return "(" + x.left.accept(this) + ") < (" + x.right.accept(this) + ")";
+    		return "(" + x.left.accept(this) + ") > (" + x.right.accept(this) + ")";
     	case GTE:
-    		return "(" + x.left.accept(this) + ") <= (" + x.right.accept(this) + ")";
+    		return "(" + x.left.accept(this) + ") >= (" + x.right.accept(this) + ")";
+    	case INTERSECT:
+			return ("Helper.ToSet((" + x.left.accept(this) + ").Intersect(" + x.right.accept(this) + "))");
+    	case PLUS: 
+    		return ("Helper.ToSet((" + x.left.accept(this) + ").Union(" + x.right.accept(this) + "))");
+    	case MINUS:
+    		return ("Helper.ToSet((" + x.left.accept(this) + ").Except(" + x.right.accept(this) + "))");
     	default: return x.op.toString() + "ExprBinary fail";
     	
 //    	still need to implement:
@@ -95,8 +101,7 @@ public class SigVisitor extends VisitQuery<Object> {
     	switch(x.op){
     	case LONEOF:
     	case ONEOF:
-    	case NOOP:
-    		return (String) x.sub.accept(this);
+    	case NOOP: return (String) x.sub.accept(this);
     	case SOMEOF:
     	case SETOF:
     		if(inSet) return (String) x.sub.accept(this);
@@ -104,6 +109,9 @@ public class SigVisitor extends VisitQuery<Object> {
     			inSet = true;
     			return "ISet<" + x.sub.accept(this) + ">";
     		}
+		case CLOSURE: return "Helper.Closure(" + x.sub.accept(this) + ")";
+        case RCLOSURE: return "Helper.RClosure(" + x.sub.accept(this) + ")";
+        case NOT: return "!(" + x.sub.accept(this) + ")";
     	default: return x.op.toString() + "ExprUnary fail";
     	}
     }
@@ -136,10 +144,18 @@ public class SigVisitor extends VisitQuery<Object> {
     	return res;
     }
 
-    //should not be needed in SigVisitor
+    //should not be needed in SigVisitor (added the same as in TVis)
     /** Visits an ExprCall node F[X1,X2,X3..] by calling accept() on X1, X2, X3... */
     @Override public String visit(ExprCall x) throws Err {
-	    return x.toString() + "ExprCall fail";
+    	String res = "FuncClass." + x.fun.label.substring(5) + "(";
+    	int i = 0;
+    	for(Expr arg : x.args){
+    		if(i>0) res += ", ";
+    		res += arg.toString();
+    		i++;
+    	}
+    	
+    	return res + ")";
     }
 
     //TODO extend ExprConstant cases (integers, bools)
@@ -167,10 +183,10 @@ public class SigVisitor extends VisitQuery<Object> {
     	return x.op.toString()	+ "ExprQt fail";
     }
 
-    //TODO extend ExprVar
+    
     /** Visits a ExprVar node (this default implementation simply returns null) */
     @Override public String visit(ExprVar x) throws Err {
-        return x.toString() + "ExprVar fail";
+        return x.label;
     }
     
     /** Visits a Sig node (this default implementation simply returns null) */

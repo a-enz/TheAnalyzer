@@ -53,15 +53,15 @@ public class TVisitor extends VisitQuery<Object> {
     	case NOT_EQUALS:
     		return "(" + x.left.accept(this) + ") != (" + x.right.accept(this) + ")"; 
     	case IMPLIES:
-    		return "(" + x.left.accept(this) + ") -: (" + x.right.accept(this) + ")";
+    		return "!(" + x.left.accept(this) + ") || (" + x.right.accept(this) + ")";
     	case LT:
     		return "(" + x.left.accept(this) + ") < (" + x.right.accept(this) + ")";
     	case LTE:
     		return "(" + x.left.accept(this) + ") <= (" + x.right.accept(this) + ")";
     	case GT:
-    		return "(" + x.left.accept(this) + ") < (" + x.right.accept(this) + ")";
+    		return "(" + x.left.accept(this) + ") > (" + x.right.accept(this) + ")";
     	case GTE:
-    		return "(" + x.left.accept(this) + ") <= (" + x.right.accept(this) + ")";
+    		return "(" + x.left.accept(this) + ") >= (" + x.right.accept(this) + ")";
 		default: return "ExprBinary fail:" + x.op.toString();
     	}
     	
@@ -227,11 +227,12 @@ public class TVisitor extends VisitQuery<Object> {
     	switch(x.op){
     	case LONEOF:
     	case ONEOF:
-    	case NOOP:
-    		return (String) x.sub.accept(this);
+    	case NOOP: return (String) x.sub.accept(this);
     	case SOMEOF:
-    	case SETOF:
-    		return "ISet<" + x.sub.accept(this) + ">";
+    	case SETOF: return "ISet<" + x.sub.accept(this) + ">";
+		case CLOSURE: return "Helper.Closure(" + x.sub.accept(this) + ")";
+        case RCLOSURE: return "Helper.RClosure(" + x.sub.accept(this) + ")";
+        case NOT: return "!(" + x.sub.accept(this) + ")";
     	default: return x.op.toString() + "ExprUnary fail";
     	}
     }

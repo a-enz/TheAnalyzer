@@ -65,15 +65,15 @@ public class FuncVisitor extends VisitQuery<Object> {
 //    				+ "IEnumerable<" + type + "> calc = ((" + x.left.accept(this) + ").Intersect(" + x.right.accept(this) + "))");
     	
        		String castTypeIntersect = x.left.type().toString();
-    		return ("(ISet<" + castTypeIntersect.substring(6, castTypeIntersect.length()-1) + ">)" + "((" + x.left.accept(this) + ").Intersect(" + x.right.accept(this) + "))");
+    		return ("Helper.ToSet((" + x.left.accept(this) + ").Intersect(" + x.right.accept(this) + "))");
     	case PLUS:
     		String castTypePlus = x.left.type().toString();
-    		return ("(ISet<" + castTypePlus.substring(6, castTypePlus.length()-1) + ">)" + "((" + x.left.accept(this) + ").Union(" + x.right.accept(this) + "))");
+    		return ("Helper.ToSet((" + x.left.accept(this) + ").Union(" + x.right.accept(this) + "))");
     	case IPLUS:
     		return ("(" + x.left.accept(this) + " + " + x.right.accept(this) + ")");
     	case MINUS:
     		String castTypeMinus = x.left.type().toString();
-    		return ("(ISet<" + castTypeMinus.substring(6, castTypeMinus.length()-1) + ">)" + "((" + x.left.accept(this) + ").Except(" + x.right.accept(this) + "))");
+    		return ("Helper.ToSet((" + x.left.accept(this) + ").Except(" + x.right.accept(this) + "))");
     	case IMINUS:
     		return ("(" + x.left.accept(this) + " - " + x.right.accept(this) + ")");
     	case MUL:
@@ -224,7 +224,7 @@ public class FuncVisitor extends VisitQuery<Object> {
             case ONEOF: return (String) x.sub.accept(this);
     		case SOMEOF:
             case SETOF: return "ISet<" + x.sub.accept(this) + ">";
-            case NOT: return "!";
+            case NOT: return "!(" + x.sub.accept(this) + ")";
             case TRANSPOSE: break;
             case CARDINALITY: break;
             case CAST2INT:  break;
@@ -261,6 +261,13 @@ public class FuncVisitor extends VisitQuery<Object> {
 		default: res += "ExprList fail";
     	}
     	return res;
+    }
+    
+    //andi: added same implementation of ExprITE as in all other visitors
+    /** Visits an ExprITE node (C => X else Y) by calling accept() on C, X, then Y. */
+    @Override public Object visit(ExprITE x) throws Err {
+    	//standard conditional b ? x : y syntax
+    	return "(" + x.cond.accept(this) + ") ? (" + x.left.accept(this) + ") : (" + x.right.accept(this) + ")";
     }
 }
 
