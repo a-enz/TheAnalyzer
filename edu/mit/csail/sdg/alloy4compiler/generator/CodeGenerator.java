@@ -144,8 +144,19 @@ public final class CodeGenerator {
 		            + "\n\treturn set;"
 		            + "\n}");
 	        out.print("\n\npublic static ISet<Tuple<L, R>> RClosure<L, R>(ISet<Tuple<L, R>> set) {"
-	            	+ "\n\treturn set;"
-	            + "\n}\n");
+	                + "\n\nISet<Tuple<L, R>> transitiveSet = Closure(set);"
+	                + "\n\nforeach (Tuple<L, R> t in transitiveSet){+"
+	                + "\n\n\nTuple<L,L> leftTuple = new Tuple<L,L>(t.Item1, t.Item1);"
+	                + "\n\n\nTuple<R, R> rightTuple = new Tuple<R, R>(t.Item2, t.Item2);"
+	                + "\n\n\nif(!transitiveSet.Contains(leftTuple as Tuple<L,R>)){"
+	                + "\n\n\n\ntransitiveSet.Add(leftTuple as Tuple<L, R>);"
+	                + "\n\n\n}"
+	                + "\n\n\nif (!transitiveSet.Contains(rightTuple as Tuple<L, R>)){"
+	                + "\n\n\n\ntransitiveSet.Add(rightTuple as Tuple<L, R>);"
+	                + "\n\n\n}"
+	                + "\n\n}"
+	                + "\n\nreturn transitiveSet;"
+	                + "\n}\n");
 	        
 	        out.print("public static ISet<T> ToSet<T>(IEnumerable<T> ienum) {\n"
 	        		+ "  ISet<T> res = new HashSet<T>();\n"
