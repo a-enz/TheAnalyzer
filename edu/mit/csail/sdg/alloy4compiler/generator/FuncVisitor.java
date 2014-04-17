@@ -63,16 +63,13 @@ public class FuncVisitor extends VisitQuery<Object> {
 //    		String type = castTypeIntersect.substring(6, castTypeIntersect.length()-1);
 //    		return ("ISet<" + type + "> res = new HashSet<" + type + ">();\n"
 //    				+ "IEnumerable<" + type + "> calc = ((" + x.left.accept(this) + ").Intersect(" + x.right.accept(this) + "))");
-    	
-       		String castTypeIntersect = x.left.type().toString();
+
     		return ("Helper.ToSet((" + x.left.accept(this) + ").Intersect(" + x.right.accept(this) + "))");
     	case PLUS:
-    		String castTypePlus = x.left.type().toString();
     		return ("Helper.ToSet((" + x.left.accept(this) + ").Union(" + x.right.accept(this) + "))");
     	case IPLUS:
     		return ("(" + x.left.accept(this) + " + " + x.right.accept(this) + ")");
     	case MINUS:
-    		String castTypeMinus = x.left.type().toString();
     		return ("Helper.ToSet((" + x.left.accept(this) + ").Except(" + x.right.accept(this) + "))");
     	case IMINUS:
     		return ("(" + x.left.accept(this) + " - " + x.right.accept(this) + ")");
