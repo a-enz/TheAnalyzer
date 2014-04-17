@@ -27,13 +27,13 @@ public class ContractVisitor extends VisitQuery<Object> {
     		return contractType + "(Contract.ForAll(" + label + ", e1 => " + x.left.accept(this) + ".Equals(e1.Item1)));\n"
     				+ contractType + "(Contract.ForAll(" + label + ", e1 => " + x.right.accept(this) + ".Equals(e1.Item2)));\n";
     	case ANY_ARROW_SOME: //poorly done
-    		return contractType + "(Contract.Exists(" + label + ", e1 => e1.Item2 != null));\n";
+    		return contractType + "(Contract.ForAll(" + label + ", e1 => Contract.Exists(" + label + ", e2 => (e2.Item2 != null) || e1.Item2.Equals(e2.Item2))));\n";
     	case ANY_ARROW_ONE: //poorly done
-    		return contractType +"(Contract.ForAll(" + label + ", e1 => Contract.ForAll(" + label + ", e2 => (e1.Item2 == e2.Item2))));\n";
-    	case ANY_ARROW_LONE:
-    		return contractType + "(ANY_ARROW_LONE);\n";
+    		return contractType + "(Contract.ForAll(" + label + ", e1 => Contract.ForAll(" + label + ".Where(e2 => e2.Item1.Equals(e1.Item1)), e3 => (e1.Item2.Equals(e3.Item2)))));\n";
+    	case ANY_ARROW_LONE: //poorly done
+    		return contractType + "(Contract.ForAll(" + label + ", e1 => Contract.ForAll(" + label + ".Where(e2 => e2.Item1.Equals(e1.Item1)), e3 => (e3.Item2 != null || e1.Item2.Equals(e3.Item2)))));\n";
     	case SOME_ARROW_ANY: //poorly done
-    		return contractType + "(Contract.Exists(" + label + ", e1 => e1.Item1 != null));\n";
+    		return contractType + "(Contract.ForAll(" + label + ", e1 => Contract.Exists(" + label + ", e2 => (e2.Item1 != null) || e1.Item1.Equals(e2.Item1))));\n";
     	case  SOME_ARROW_SOME:
     		return contractType + "(SOME_ARROW_SOME);\n";
     	case  SOME_ARROW_ONE:
@@ -41,22 +41,25 @@ public class ContractVisitor extends VisitQuery<Object> {
     	case  SOME_ARROW_LONE:
     		return contractType + "(SOME_ARROW_LONE);\n";
     	case  ONE_ARROW_ANY: //poorly done
-    		return contractType +"(Contract.ForAll(" + label + ", e1 => Contract.ForAll(" + label + ", e2 => (e1.Item1 == e2.Item1))));\n";
+    		return contractType + "(Contract.ForAll(" + label + ", e1 => Contract.ForAll(" + label + ".Where(e2 => e2.Item2.Equals(e1.Item2)), e3 => (e1.Item1.Equals(e3.Item1)))));\n";
     	case  ONE_ARROW_SOME:
-    		return contractType + "(ONE_ARROW_SOME);\n";
-    	case  LONE_ARROW_ANY:
-    		return contractType + "(LONW_ARROW_ANY);\n";
-    	case  LONE_ARROW_LONE:
-    		return contractType + "(LONE_ARROW_LONE);\n";
-    	case  LONE_ARROW_SOME:
+    		return contractType + "(Contract.ForAll(" + label + ", e1 => Contract.ForAll(" + label + ".Where(e2 => e2.Item2.Equals(e1.Item2)), e3 => (e1.Item1.Equals(e3.Item1)))));\n";
+    	case  LONE_ARROW_ANY: //poorly done
+    		return contractType + "(Contract.ForAll(" + label + ", e1 => Contract.ForAll(" + label + ".Where(e2 => e2.Item2.Equals(e1.Item2)), e3 => (e3.Item1 != null || e1.Item1.Equals(e3.Item1)))));\n";
+    	case  LONE_ARROW_LONE: //poorly done	
+    		return contractType + "(Contract.ForAll(" + label + ", e1 => Contract.ForAll(" + label + ".Where(e2 => (e2.Item1 != null) && e2.Item1.Equals(e1.Item1)), e3 => (e1.Item2.Equals(e3.Item2)))));\n"
+    			+ contractType + "(Contact.ForAll(" + label + ", e1 => Contract.ForAll(" + label + ".Where(e2 => (e2.Item2 != null) && e2.Item2.Equals(e1.Item2)), e3 => (e1.Item1 == e2.Item1)))))";
+    	case  LONE_ARROW_SOME: //TODO
     		return contractType + "(LONE_ARROW_SOME);\n";
-    	case  LONE_ARROW_ONE:
-    		return contractType + "(LONE_ARROW_ONE);\n";
+    	case  LONE_ARROW_ONE: //poorly done
+    		return contractType + "(Contract.ForAll(" + label + ", e1 => Contract.ForAll(" + label + ".Where(e2 => (e2.Item1 != null) && e2.Item1.Equals(e1.Item1)), e3 => (e1.Item2.Equals(e3.Item2)))));\n"
+			+ contractType + "(Contact.ForAll(" + label + ", e1 => Contract.ForAll(" + label + ".Where(e2 => e2.Item2.Equals(e1.Item2)), e3 => (e3.Item1 == null || e1.Item1 == e2.Item1)))))";
     	case  ONE_ARROW_ONE: //poorly done
-    		return contractType + "(Contract.ForAll(" + label + ", e1 => Contract.ForAll(" + label + ".Where(e2 => e2.Item1 == e1.Item1), e3 => (e1.Item2 == e3.Item2))));\n"
-    				+ contractType + "(Contract.ForAll(" + label + ", e1 => Contract.ForAll(" + label + ".Where(e2 => e2.Item2 == e1.Item2), e3 => (e1.Item1 == e3.Item1))));\n";
-    	case  ONE_ARROW_LONE:
-    		return contractType + "(ONE_ARROW_LONE);\n";
+    		return contractType + "(Contract.ForAll(" + label + ", e1 => Contract.ForAll(" + label + ".Where(e2 => e2.Item1.Equals(e1.Item1)), e3 => (e1.Item2.Equals(e3.Item2)))));\n"
+    				+ contractType + "(Contract.ForAll(" + label + ", e1 => Contract.ForAll(" + label + ".Where(e2 => e2.Item2.Equals(e1.Item2)), e3 => (e1.Item1.Equals(e3.Item1)))));\n";
+    	case  ONE_ARROW_LONE: //poorly done
+    		return contractType + "(Contract.ForAll(" + label + ", e1 => Contract.ForAll(" + label + ".Where(e2 => (e2.Item2 != null) && e2.Item2.Equals(e1.Item2)), e3 => (e1.Item1.Equals(e3.Item1)))));\n"
+    				+ contractType + "(Contact.ForAll(" + label + ", e1 => Contract.ForAll(" + label + ".Where(e2 => e2.Item1.Equals(e1.Item1)), e3 => (e3.Item2 == null || e1.Item2 == e2.Item2)))))";
     	case JOIN:
     		return (String) x.right.accept(this);
     		//now for bool and int cases:
