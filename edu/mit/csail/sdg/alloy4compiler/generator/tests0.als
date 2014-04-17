@@ -8,7 +8,7 @@ sig Platform {
 
 sig Man {
   ceiling, floor: one Platform,
-  between: floor -> one ceiling
+  between: Platform some -> one ceiling
 }
 
 pred Above[m, n: one Man] {

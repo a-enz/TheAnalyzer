@@ -52,14 +52,14 @@ public final class CSharpGeneratorTests {
 	public static void main(String[] args) throws Exception {
 
 		String path = "..\\edu\\mit\\csail\\sdg\\alloy4compiler\\generator\\";
-		boolean[] contracts = {false,					true,                    false,                   false,                   true,                    true,                     false,                    false,                    true,                     true,                     false,                    false,                    true};
-		boolean[] expected =  {false, 					false,                   true,                    true,                    false,                   true,                     true,                     true,                     true,                     false,                    true,                     true,                     true};
-		String[] error =      {"Assertion failed", 		"Invariant failed",      "",                      "",                      "Assertion failed",      "",                       "",                       "",                       "",                       "Postcondition failed",   "",                       "",                       ""};
-		String[] code =       {"",						path + "tests2.als.sol", "",                      "",                      path + "tests8.als.sol", "",                       "",                       "",                       "",                       "",                       "",                       "",                       ""};
-		String[] test =       {"",						"",                      path + "tests5.als.sol", path + "tests7.als.sol", "",                      path + "tests11.als.sol", path + "tests12.als.sol", path + "tests13.als.sol", path + "tests15.als.sol", path + "tests17.als.sol", path + "tests19.als.sol", path + "tests22.als.sol", path + "tests23.als.sol"};
+		boolean[] contracts = {true,                    false,                   false,                   true,                    true,                     false,                    false,                    true,                     true,                     false,                    false,                    true};
+		boolean[] expected =  {false,                   true,                    true,                    false,                   true,                     true,                     true,                     true,                     false,                    true,                     true,                     true};
+		String[] error =      {"Invariant failed",      "",                      "",                      "Assertion failed",      "",                       "",                       "",                       "",                       "Postcondition failed",   "",                       "",                       ""};
+		String[] code =       {path + "tests2.als.sol", "",                      "",                      path + "tests8.als.sol", "",                       "",                       "",                       "",                       "",                       "",                       "",                       ""};
+		String[] test =       {"",                      path + "tests5.als.sol", path + "tests7.als.sol", "",                      path + "tests11.als.sol", path + "tests12.als.sol", path + "tests13.als.sol", path + "tests15.als.sol", path + "tests17.als.sol", path + "tests19.als.sol", path + "tests22.als.sol", path + "tests23.als.sol"};
 
 		// initial test suite
-		int[] testNumber = {0, 2, 5, 7, 8, 11, 12, 13, 15, 17, 19, 22, 23};
+		int[] testNumber = {2, 5, 7, 8, 11, 12, 13, 15, 17, 19, 22, 23};
 
 		int timeout = 20;
 		
